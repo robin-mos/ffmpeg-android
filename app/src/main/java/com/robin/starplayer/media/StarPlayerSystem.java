@@ -17,6 +17,7 @@ public class StarPlayerSystem {
         System.loadLibrary("swresample-2");
         System.loadLibrary("swscale-4");
         System.loadLibrary("avcodec-57");
+        System.loadLibrary("avresample-3");
     }
 
     public static native int version();
@@ -32,5 +33,7 @@ public class StarPlayerSystem {
     public static native int onPause();
 
     public static native int onStop();
+
+    public static native int main(int argc,Object argv);
 
 }

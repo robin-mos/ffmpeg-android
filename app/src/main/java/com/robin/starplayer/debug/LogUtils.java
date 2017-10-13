@@ -11,6 +11,12 @@ public class LogUtils {
 
     private static boolean DEBUG = true;
 
+    public static void e(String tag,String msg){
+        if(DEBUG){
+            Log.e(tag,msg);
+        }
+    }
+
     public static void e(String msg){
         if(DEBUG){
             Log.e(TAG,msg);

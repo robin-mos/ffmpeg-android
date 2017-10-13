@@ -20,7 +20,7 @@ import java.util.regex.Pattern;
  */
 
 public class MediaFileManager {
-    private static final String regex = "^/.{1,}.(mp4|264|mkv)$";
+    private static final String regex = "^/.{1,}.(mp4|264|mkv|flv)$";
 
     public static ArrayList<String> getVideoInfo(Context context){
         Pattern mVideoPattern = Pattern.compile(regex);

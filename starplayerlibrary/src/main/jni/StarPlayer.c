@@ -9,6 +9,8 @@
 #include "utils.h"
 #include <android/native_window.h>
 #include <android/native_window_jni.h>
+#include "sdl/include/SDL_stdinc.h"
+#include "ffplay/ffplay.h"
 
 char *path;
 
@@ -218,5 +220,46 @@ JNIEXPORT jint JNICALL Java_com_robin_starplayer_media_StarPlayerSystem_onStop
 	return 0;
   }
 
+  
+ JNIEXPORT jint JNICALL Java_com_robin_starplayer_media_StarPlayerSystem_main(JNIEnv *env, jclass jclass,jint argc ,jobject  array){
+	int i;
+	char **argv;
 
+	int len = (*env)->GetArrayLength(env, array);
+	 LOGE( "array len: %d\n",len);
+	
+	argv = SDL_stack_alloc(char*, 1 + len + 1);
+	
+	argc = 0;
+	argv[argc++] = SDL_strdup("app_process");
+	 LOGE( "SDL  SDL_strdup");
+	 for (i = 0; i < len; ++i) {
+		 const char* utf;
+		 char* arg = NULL;
+		jstring string = (*env)->GetObjectArrayElement(env, array, i);
+		if (string) {
+			utf = (*env)->GetStringUTFChars(env, string, 0);
+			 if (utf) {
+				 arg = SDL_strdup(utf);
+				(*env)->ReleaseStringUTFChars(env, string, utf);
+			}
+			(*env)->DeleteLocalRef(env, string);
+		}
+		 if (!arg) {
+		 	arg = SDL_strdup("");
+		}
+		 argv[argc++] = arg;
+	}
+	argv[argc] = NULL;
+
+//main player
+	LOGE("android main");
+	android_main(argc,argv);	   
+	 for (i = 0; i < argc; ++i) {
+		SDL_free(argv[i]);
+	}
+	SDL_stack_free(argv);
+	LOGE( "SDL  free");
+
+  }
 

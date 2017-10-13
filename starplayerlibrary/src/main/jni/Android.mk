@@ -36,15 +36,29 @@ LOCAL_SRC_FILES := ffmpeg/lib/libswresample-2.so
 include $(PREBUILT_SHARED_LIBRARY)
 
 include $(CLEAR_VARS)
+LOCAL_MODULE := avresample
+LOCAL_SRC_FILES := ffmpeg/lib/libavresample-3.so
+include $(PREBUILT_SHARED_LIBRARY)
+include $(CLEAR_VARS)
 LOCAL_MODULE := swscale
 LOCAL_SRC_FILES := ffmpeg/lib/libswscale-4.so
 include $(PREBUILT_SHARED_LIBRARY)
 
 include $(CLEAR_VARS)
+LOCAL_MODULE := SDL2
+LOCAL_SRC_FILES := sdl/lib/libSDL2.so
+include $(PREBUILT_SHARED_LIBRARY)
+
+include $(CLEAR_VARS)
 
 LOCAL_MODULE    := starplayer
-LOCAL_INCLUDE += $(LOCAL_PATH)/ffmpeg/include
-LOCAL_SRC_FILES := StarPlayer.c
+LOCAL_INCLUDE += $(LOCAL_PATH)/ffmpeg/include  \
+				$(LOCAL_PATH)/ffmpeg/cmdutils.h  \
+                $(LOCAL_PATH)/ffmpeg/compat  \
+                 $(LOCAL_PATH)/sdl/include
+LOCAL_SRC_FILES := StarPlayer.c  \
+					ffplay/ffplay.c \
+                    ffmpeg/cmdutils.c
 LOCAL_LDLIBS += -llog -lm -lz -landroid
 #LOCAL_C_INCLUDES += $(LOCAL_PATH)/ffmpeg/include
 LOCAL_SHARED_LIBRARIES := avformat \
@@ -54,8 +68,41 @@ LOCAL_SHARED_LIBRARIES := avformat \
                         avutil \
                         postproc \
                         swresample \
-                        swscale
+                        avresample  \
+                        swscale \
+						avresample  \
+                        SDL2
 
 include $(BUILD_SHARED_LIBRARY)
+
+
+#
+# ffplay shared library
+#
+#include $(CLEAR_VARS)
+#LOCAL_MODULE    := ffplay
+#LOCAL_C_INCLUDES += $(LOCAL_PATH)/ffmpeg/cmdutils.h  \
+ #               $(LOCAL_PATH)/ffmpeg/include \
+  #              $(LOCAL_PATH)/ffmpeg/compat  \
+   #              $(LOCAL_PATH)/sdl/include
+#
+#LOCAL_SRC_FILES := ffplay/ffplay.c \
+ #                   ffmpeg/cmdutils.c
+#LOCAL_LDLIBS += -llog -lm -lz -landroid
+#LOCAL_C_INCLUDES += $(LOCAL_PATH)/ffmpeg/include
+#LOCAL_SHARED_LIBRARIES := avformat \
+ #                       avcodec \
+  #                      avdevice \
+   #                     avfilter \
+    #                    avutil \
+     #                   postproc \
+      #                  swresample \
+       #                 swscale  \
+        #                avresample  \
+         #               SDL2
+#
+#include $(BUILD_SHARED_LIBRARY)
+
+
 
 

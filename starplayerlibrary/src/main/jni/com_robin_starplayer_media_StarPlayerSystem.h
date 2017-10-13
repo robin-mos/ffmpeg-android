@@ -39,6 +39,8 @@ JNIEXPORT jint JNICALL Java_com_robin_starplayer_media_StarPlayerSystem_prepare(
 
 JNIEXPORT jint JNICALL Java_com_robin_starplayer_media_StarPlayerSystem_setPath(JNIEnv *, jclass,jstring);
 
+JNIEXPORT jint JNICALL Java_com_robin_starplayer_media_StarPlayerSystem_main(JNIEnv *, jclass,jint ,jobject );
+
 
 #ifdef __cplusplus
 }

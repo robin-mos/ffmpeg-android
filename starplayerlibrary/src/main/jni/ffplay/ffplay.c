@@ -948,7 +948,7 @@ static void video_image_display(VideoState *is)
                 sp = NULL;
         }
     }
-    LOGE("width:%d,height:%d,vp width:%d,vp height:%d",is->width,is->height,vp->width,vp->height);
+  //  LOGE("width:%d,height:%d,vp width:%d,vp height:%d",is->width,is->height,vp->width,vp->height);
  //计算显示画面的位置。当拉伸了SDL的窗口的时候，可以让其中的视频保持纵横比。
 //	calculate_display_rect(&rect, is->xleft, is->ytop, is->width, is->height, vp->width, vp->height, vp->sar);
  calculate_display_rect(&rect, mRect.x, mRect.y, mRect.w, mRect.h, vp->width, vp->height, vp->sar);
@@ -981,6 +981,7 @@ static void video_image_display(VideoState *is)
         }
 #endif
     }
+    
 }
 
 static inline int compute_mod(int a, int b)
@@ -1231,11 +1232,14 @@ static void do_exit(VideoState *is)
         stream_close(is);
     }
  
-    if (renderer)
+    if (renderer){
+		LOGE("SDL_DestroyRenderer");
         SDL_DestroyRenderer(renderer);
-    if (window)
+    	}
+    if (window){
+		LOGE("SDL_DestroyWindow");
         SDL_DestroyWindow(window);
-
+    	}
     av_lockmgr_register(NULL);
     uninit_opts();
 #if CONFIG_AVFILTER
@@ -1244,6 +1248,7 @@ static void do_exit(VideoState *is)
     avformat_network_deinit();
     if (show_status)
         printf("\n");
+    LOGE("SDL_Quit");
     SDL_Quit();
     av_log(NULL, AV_LOG_QUIET, "%s", "");
     exit(0);
@@ -1543,10 +1548,10 @@ static void video_refresh(void *opaque, double *remaining_time)
         if (is->force_refresh || is->last_vis_time + rdftspeed < time) {
             video_display(is);
             is->last_vis_time = time;
-        }
+       }
         *remaining_time = FFMIN(*remaining_time, is->last_vis_time + rdftspeed - time);
     }
-
+    
     if (is->video_st) {
 retry:
         if (frame_queue_nb_remaining(&is->pictq) == 0) {
@@ -1640,9 +1645,10 @@ retry:
                 stream_toggle_pause(is);
         }
 display:
-        /* display picture */
-        if (!display_disable && is->force_refresh && is->show_mode == SHOW_MODE_VIDEO && is->pictq.rindex_shown)
+      /* display picture */
+        if (!display_disable && is->force_refresh && is->show_mode == SHOW_MODE_VIDEO && is->pictq.rindex_shown){
             video_display(is);
+       }
     }
     is->force_refresh = 0;
     if (show_status) {
@@ -2526,6 +2532,20 @@ static int stream_component_open(VideoState *is, int stream_index)
     if (!avctx)
         return AVERROR(ENOMEM);
 
+   LOGE("%x,%x",AV_NOPTS_VALUE,ic->duration);
+   if(AV_NOPTS_VALUE != ic->duration){
+   	int hours, mins, secs, us;  
+	 int64_t duration = ic->duration + 5000;	
+	 secs = duration / AV_TIME_BASE;	
+	us = duration % AV_TIME_BASE;  
+	mins = secs / 60;  
+	secs %= 60;	
+	hours = mins/ 60;  
+	mins %= 60;	
+
+   	LOGE("video length=%02d m:%02d s:%02d",hours,mins,secs);
+  	 (*mTimeStampCallBack)(hours,mins,secs,duration / AV_TIME_BASE);
+   }
     ret = avcodec_parameters_to_context(avctx, ic->streams[stream_index]->codecpar);
     if (ret < 0)
         goto fail;
@@ -2638,7 +2658,7 @@ static int stream_component_open(VideoState *is, int stream_index)
     case AVMEDIA_TYPE_VIDEO:
         is->video_stream = stream_index;
         is->video_st = ic->streams[stream_index];
-
+		
         decoder_init(&is->viddec, avctx, &is->videoq, is->continue_read_thread);
         if ((ret = decoder_start(&is->viddec, video_thread, is)) < 0)
             goto out;
@@ -3642,6 +3662,11 @@ static int lockmgr(void **mtx, enum AVLockOp op)
    }
    return 1;
 }
+
+void setTimeStamp(timeStampCallBack callback){
+	mTimeStampCallBack = callback;
+}
+
 
 
 /* Called from the main */

@@ -1,20 +1,14 @@
 LOCAL_PATH := $(call my-dir)
 
-###########################
 #
-# SDL shared library
+# sdl2 shared lib
 #
-###########################
 
 include $(CLEAR_VARS)
-
 LOCAL_MODULE := SDL2
-
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/include
-
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_C_INCLUDES) \
                             ../ffplay/ffplay.h
-
 
 LOCAL_SRC_FILES := \
 	$(subst $(LOCAL_PATH)/,, \
@@ -51,28 +45,6 @@ LOCAL_SRC_FILES := \
 	$(wildcard $(LOCAL_PATH)/*.c) \
 	$(wildcard $(LOCAL_PATH)/src/test/*.c))
 
-
 LOCAL_CFLAGS += -DGL_GLEXT_PROTOTYPES
 LOCAL_LDLIBS := -ldl -lGLESv1_CM -lGLESv2 -llog -landroid
-
 include $(BUILD_SHARED_LIBRARY)
-
-###########################
-#
-# SDL main shared library
-#
-###########################
-
-include $(CLEAR_VARS)
-
-LOCAL_C_INCLUDES := $(LOCAL_PATH)/sdl/include
-
-LOCAL_MODULE := SDL2_main
-
-LOCAL_MODULE_FILENAME := libSDL2main
-
-LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/sdl/src/main/android/*.c)
-LOCAL_LDLIBS := -ldl -llog -landroid
-#LOCAL_SHARED_LIBRARIES := SDL2
-include $(BUILD_SHARED_LIBRARY)
-

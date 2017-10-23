@@ -884,6 +884,7 @@ static void Android_JNI_ThreadDestroyed(void* value)
     if (env != NULL) {
         (*mJavaVM)->DetachCurrentThread(mJavaVM);
         pthread_setspecific(mThreadKey, NULL);
+	 env = NULL;
     }
 }
 
